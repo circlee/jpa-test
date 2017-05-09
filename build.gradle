@@ -1,0 +1,81 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.3.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+
+	ext {
+			queryDslVersion = "4.1.4"
+		}
+	// QueryDSL
+    compile "com.querydsl:querydsl-core:${queryDslVersion}"
+    compile "com.querydsl:querydsl-apt:${queryDslVersion}"
+    compile "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    compile "com.querydsl:querydsl-sql:${queryDslVersion}"
+    compile "com.querydsl:querydsl-sql-spring:${queryDslVersion}"
+    
+    compile('javax.inject:javax.inject')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	runtime('com.h2database:h2')
+	compileOnly('org.projectlombok:lombok')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+sourceSets {
+    generated {
+        java {
+            srcDir "src/main/genegrated"
+        }
+    }
+}
+ 
+task generateQueryDSL(type: JavaCompile, group: 'build') {
+    source = sourceSets.main.java
+    classpath = configurations.compile
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor"
+    ]
+    options.encoding = "UTF-8"
+    destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+}
+
+compileJava {
+    dependsOn generateQueryDSL
+    source generateQueryDSL.destinationDir
+}
+
+compileGeneratedJava {
+    dependsOn generateQueryDSL
+    options.warnings = false
+    classpath += sourceSets.main.runtimeClasspath
+}
+
+springBoot {
+    mainClass = "com.glowpick.ec.Application"
+}
+
+clean {
+    delete sourceSets.generated.java.srcDirs
+}
