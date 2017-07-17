@@ -3,6 +3,7 @@ package com.sample.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,25 +14,29 @@ import lombok.EqualsAndHashCode;
 
 @Entity
 @EqualsAndHashCode(callSuper = false)
-public class Manager  implements Serializable{
+public class Category  implements Serializable{
+
 
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1823093498894910138L;
+	private static final long serialVersionUID = 7358242943473807765L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String firstName;
 	private String lastName;
 
-	public Manager(){
+	public Category(){
 
 	}
 
-	@OneToMany(mappedBy = "manager")
-	private List<CustomerManager> customerManager;
+	@OneToMany(mappedBy = "category",cascade={CascadeType.ALL}, orphanRemoval=true)
+	private List<Product> products;
+	
+	@OneToMany(mappedBy = "category",cascade={CascadeType.REMOVE})
+	private Product mainProduct;
 
 	public Long getId() {
 		return id;
@@ -63,7 +68,7 @@ public class Manager  implements Serializable{
 	}
 
 
-	public Manager(String firstName, String lastName) {
+	public Category(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -72,16 +77,20 @@ public class Manager  implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Manager [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
+		return "Category [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
 	}
 
 
-	public List<CustomerManager> getCustomerManager() {
-		return customerManager;
+	public List<Product> getProducts() {
+		return products;
 	}
 
 
-	public void setCustomerManager(List<CustomerManager> customerManager) {
-		this.customerManager = customerManager;
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
+
+	
+
+
 }

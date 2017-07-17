@@ -3,35 +3,41 @@ package com.sample.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.EqualsAndHashCode;
 
 @Entity
 @EqualsAndHashCode(callSuper = false)
-public class Manager  implements Serializable{
+public class Product  implements Serializable{
 
 
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1823093498894910138L;
+	private static final long serialVersionUID = 2193868394198678363L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String firstName;
 	private String lastName;
 
-	public Manager(){
+	public Product(){
 
 	}
 
-	@OneToMany(mappedBy = "manager")
-	private List<CustomerManager> customerManager;
+	@JsonIgnore
+	@ManyToOne
+	private Category category;
 
 	public Long getId() {
 		return id;
@@ -63,7 +69,7 @@ public class Manager  implements Serializable{
 	}
 
 
-	public Manager(String firstName, String lastName) {
+	public Product(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -76,12 +82,14 @@ public class Manager  implements Serializable{
 	}
 
 
-	public List<CustomerManager> getCustomerManager() {
-		return customerManager;
+	public Category getCategory() {
+		return category;
 	}
 
 
-	public void setCustomerManager(List<CustomerManager> customerManager) {
-		this.customerManager = customerManager;
+	public void setCategory(Category category) {
+		this.category = category;
 	}
+
+
 }
